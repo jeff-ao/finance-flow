@@ -13,7 +13,10 @@ export const deleteTransaction = async (
     const user = await getUserByUuid(req.user?.userUuid);
 
     const transactionsService = TransactionsService.getInstance();
-    const result = await transactionsService.delete(validatedParams.id, user.id);
+    const result = await transactionsService.delete(
+      validatedParams.id,
+      user.id
+    );
 
     res.status(200).json(result);
   } catch (error) {
