@@ -19,6 +19,10 @@ export const updateTransaction = async (
 
     const user = await getUserByUuid(req.user?.userUuid);
 
+    if (!transactionId || isNaN(transactionId)) {
+      throw new AppError("ID da transação inválido", 400);
+    }
+
     if (!["SINGLE", "FUTURE", "ALL"].includes(scope)) {
       throw new AppError("Escopo inválido. Use: SINGLE, FUTURE ou ALL", 400);
     }
@@ -30,10 +34,16 @@ export const updateTransaction = async (
       user.id,
       {
         value: validatedData.amount,
-        date: validatedData.date,
+        date:
+          validatedData.date instanceof Date
+            ? validatedData.date
+            : validatedData.date
+            ? new Date(validatedData.date)
+            : undefined,
         status: validatedData.status,
         title: validatedData.title,
-        categoryId: validatedData.category_id,
+        type: validatedData.type,
+        categoryId: validatedData.category_id ?? undefined,
       },
       scope as UpdateScope
     );

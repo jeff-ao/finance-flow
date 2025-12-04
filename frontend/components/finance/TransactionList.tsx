@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { LucideIcon } from "../LucideIcons";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -31,7 +32,6 @@ export function TransactionList({
   onDeleteTransaction,
 }: TransactionListProps) {
   const [filter, setFilter] = useState<FilterType>("all");
-  const [showEmpty, setShowEmpty] = useState(true);
 
   const filteredTransactions = transactions.filter((t) => {
     if (filter === "all") return true;
@@ -153,7 +153,13 @@ export function TransactionList({
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-lg">
-                            {transaction.category.icon || "📦"}
+                            {transaction.category !== null ? (
+                              <LucideIcon
+                                name={transaction.category.icon as any}
+                              />
+                            ) : (
+                              "📦"
+                            )}
                           </div>
                           <div>
                             <p className="font-medium text-foreground">

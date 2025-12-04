@@ -31,7 +31,7 @@ export const loginUser = async (
 
     const token = generateToken({ userUuid: user.uuid });
     // Here you would typically generate a JWT or session for the user
-    SuccessResponse.withToken(res, token, "Login successful");
+    SuccessResponse.withToken(res, token, "Login successful", 200);
   } catch (error) {
     next(error);
   }

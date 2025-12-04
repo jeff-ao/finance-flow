@@ -12,6 +12,11 @@ export const createTransaction = async (
     const validatedData = createTransactionSchema.parse(req.body);
     const user = await getUserByUuid(req.user?.userUuid);
 
+    console.log("📝 Dados validados:", {
+      category_id: validatedData.category_id,
+      title: validatedData.title,
+    });
+
     const transactionsService = TransactionsService.getInstance();
 
     const transaction = await transactionsService.create({
@@ -23,6 +28,8 @@ export const createTransaction = async (
       status: validatedData.status,
       userId: user.id,
     });
+
+    console.log("✅ Transação criada com categoryId:", transaction.categoryId);
 
     res.status(201).json(transaction);
   } catch (error) {

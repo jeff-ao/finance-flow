@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Transaction, TransactionType, Category } from "@/types/finance";
-import { categories } from "@/data/mockData";
+import { categoryService } from "@/lib/services";
+import type { Category as APICategory } from "@/lib/schemas";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -47,6 +48,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { LucideIcon } from "../LucideIcons";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -72,6 +74,20 @@ export function TransactionModal({
   const [notes, setNotes] = useState("");
   const [addAnother, setAddAnother] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [categories, setCategories] = useState<APICategory[]>([]);
+
+  // Carrega categorias
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await categoryService.list();
+        setCategories(data);
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+      }
+    };
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     if (editingTransaction) {
@@ -100,22 +116,32 @@ export function TransactionModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const selectedCategory = categories.find((c) => c.id === categoryId);
-    if (!selectedCategory || !title || !value) return;
+    const selectedCategory = categories.find(
+      (c) => c.id.toString() === categoryId
+    );
+    if (!title || !value || !categoryId) return;
 
     onSave({
       title,
       value: parseFloat(value),
       type,
-      category: selectedCategory,
+      category: selectedCategory
+        ? {
+            id: selectedCategory.id.toString(),
+            name: selectedCategory.name,
+            icon: selectedCategory.webDeviceIcon || "📦",
+          }
+        : { id: "0", name: "Sem categoria", icon: "📦" },
       date,
       isPaid,
       notes: notes || undefined,
     });
 
     if (addAnother) {
+      // Reseta o formulário para cadastrar outra transação
       resetForm();
     } else {
+      // Fecha o modal apenas se não for para cadastrar mais
       onClose();
     }
   };
@@ -254,11 +280,19 @@ export function TransactionModal({
                     {categories.map((category) => (
                       <SelectItem
                         key={category.id}
-                        value={category.id}
+                        value={category.id.toString()}
                         className="rounded-lg text-sm"
                       >
                         <span className="flex items-center gap-2">
-                          <span>{category.icon}</span>
+                          <span>
+                            {category.webDeviceIcon !== null ? (
+                              <LucideIcon
+                                name={category.webDeviceIcon as any}
+                              />
+                            ) : (
+                              "📦"
+                            )}
+                          </span>
                           <span>{category.name}</span>
                         </span>
                       </SelectItem>

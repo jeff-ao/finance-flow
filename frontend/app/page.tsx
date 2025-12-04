@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,10 +15,157 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DollarSign, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { authService } from "@/lib/services";
+import { toast } from "sonner";
+import { z } from "zod";
+import { AxiosError } from "axios";
+
+// Schemas de validação
+const loginSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
+});
+
+const registerSchema = z
+  .object({
+    name: z.string().min(3, "O nome deve ter no mínimo 3 caracteres"),
+    email: z.string().email("Email inválido"),
+    password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+  });
 
 export default function Authenticate() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Login state
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginErrors, setLoginErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
+
+  // Register state
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+  const [registerErrors, setRegisterErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setLoginErrors({});
+
+    try {
+      // Validação com Zod
+      const result = loginSchema.safeParse({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (!result.success) {
+        const errors: any = {};
+        result.error.issues.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        setLoginErrors(errors);
+        return;
+      }
+
+      setIsLoading(true);
+
+      const response = await authService.login({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      authService.storeAuth(response);
+      toast.success("Login realizado com sucesso!");
+      router.push("/home");
+    } catch (error: any) {
+      if (error instanceof AxiosError) {
+        console.error("Login error:", error.response?.data);
+        const errorMessage =
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Erro ao fazer login";
+        toast.error(errorMessage);
+        return;
+      }
+      toast.error("Erro ao fazer login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setRegisterErrors({});
+
+    try {
+      // Validação com Zod
+      const result = registerSchema.safeParse({
+        name: registerName,
+        email: registerEmail,
+        password: registerPassword,
+        confirmPassword: registerConfirmPassword,
+      });
+
+      if (!result.success) {
+        const errors: any = {};
+        result.error.issues.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        setRegisterErrors(errors);
+        return;
+      }
+
+      setIsLoading(true);
+
+      const response = await authService.register({
+        name: registerName,
+        email: registerEmail,
+        password: registerPassword,
+      });
+
+      authService.storeAuth(response);
+      toast.success("Conta criada com sucesso!");
+      router.push("/home");
+    } catch (error: any) {
+      if (error instanceof AxiosError) {
+        console.error("Register error:", error.response?.data);
+        const errorMessage =
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Erro ao criar conta";
+        toast.error(errorMessage);
+        return;
+      }
+      toast.error("Erro ao criar conta");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
@@ -49,7 +197,7 @@ export default function Authenticate() {
 
             {/* Login Tab */}
             <TabsContent value="login">
-              <form>
+              <form onSubmit={handleLogin}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
@@ -60,8 +208,16 @@ export default function Authenticate() {
                         type="email"
                         placeholder="seu@email.com"
                         className="pl-10"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        disabled={isLoading}
                       />
                     </div>
+                    {loginErrors.email && (
+                      <p className="text-sm text-destructive">
+                        {loginErrors.email}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -73,6 +229,9 @@ export default function Authenticate() {
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         className="pl-10 pr-10"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        disabled={isLoading}
                       />
                       <button
                         type="button"
@@ -86,6 +245,11 @@ export default function Authenticate() {
                         )}
                       </button>
                     </div>
+                    {loginErrors.password && (
+                      <p className="text-sm text-destructive">
+                        {loginErrors.password}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-end">
@@ -96,8 +260,13 @@ export default function Authenticate() {
                 </CardContent>
 
                 <CardFooter>
-                  <Button className="w-full" size="lg" type="submit">
-                    Entrar
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Entrando..." : "Entrar"}
                   </Button>
                 </CardFooter>
               </form>
@@ -105,7 +274,7 @@ export default function Authenticate() {
 
             {/* Register Tab */}
             <TabsContent value="register">
-              <form>
+              <form onSubmit={handleRegister}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="register-name">Nome completo</Label>
@@ -116,8 +285,16 @@ export default function Authenticate() {
                         type="text"
                         placeholder="Seu nome"
                         className="pl-10"
+                        value={registerName}
+                        onChange={(e) => setRegisterName(e.target.value)}
+                        disabled={isLoading}
                       />
                     </div>
+                    {registerErrors.name && (
+                      <p className="text-sm text-destructive">
+                        {registerErrors.name}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -129,8 +306,16 @@ export default function Authenticate() {
                         type="email"
                         placeholder="seu@email.com"
                         className="pl-10"
+                        value={registerEmail}
+                        onChange={(e) => setRegisterEmail(e.target.value)}
+                        disabled={isLoading}
                       />
                     </div>
+                    {registerErrors.email && (
+                      <p className="text-sm text-destructive">
+                        {registerErrors.email}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -142,6 +327,9 @@ export default function Authenticate() {
                         type={showPassword ? "text" : "password"}
                         placeholder="Mínimo 6 caracteres"
                         className="pl-10 pr-10"
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
+                        disabled={isLoading}
                       />
                       <button
                         type="button"
@@ -155,6 +343,11 @@ export default function Authenticate() {
                         )}
                       </button>
                     </div>
+                    {registerErrors.password && (
+                      <p className="text-sm text-destructive">
+                        {registerErrors.password}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -168,6 +361,11 @@ export default function Authenticate() {
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Digite a senha novamente"
                         className="pl-10 pr-10"
+                        value={registerConfirmPassword}
+                        onChange={(e) =>
+                          setRegisterConfirmPassword(e.target.value)
+                        }
+                        disabled={isLoading}
                       />
                       <button
                         type="button"
@@ -183,6 +381,11 @@ export default function Authenticate() {
                         )}
                       </button>
                     </div>
+                    {registerErrors.confirmPassword && (
+                      <p className="text-sm text-destructive">
+                        {registerErrors.confirmPassword}
+                      </p>
+                    )}
                   </div>
 
                   <p className="text-xs text-muted-foreground">
@@ -198,8 +401,13 @@ export default function Authenticate() {
                 </CardContent>
 
                 <CardFooter>
-                  <Button className="w-full" size="lg" type="submit">
-                    Criar conta
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Criando conta..." : "Criar conta"}
                   </Button>
                 </CardFooter>
               </form>

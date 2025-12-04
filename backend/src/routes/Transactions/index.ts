@@ -226,6 +226,10 @@ router.get("/", listTransactions);
  *                 type: string
  *                 format: date-time
  *                 description: Nova data
+ *               type:
+ *                 type: string
+ *                 enum: [INPUT, OUTPUT]
+ *                 description: Novo tipo da transação
  *               status:
  *                 type: string
  *                 enum: [PENDING, PAID]

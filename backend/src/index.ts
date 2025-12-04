@@ -9,11 +9,20 @@ import recurrenceRoutes from "./routes/Recurrences/index.js";
 import categoryRoutes from "./routes/Categories/index.js";
 import frequencyRoutes from "./routes/Frequencies/index.js";
 import { APP_CONFIG } from "application/config/app.cofig.js";
+import cors from "cors";
 
 const app = express();
 const port = APP_CONFIG.PORT;
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: APP_CONFIG.CORS_ORIGIN,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Swagger Documentation
 app.use(

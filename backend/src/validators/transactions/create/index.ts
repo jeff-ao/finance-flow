@@ -7,7 +7,7 @@ export const createTransactionSchema = z.object({
   type: z.enum(["INPUT", "OUTPUT"], {
     errorMap: () => ({ message: "Tipo deve ser INPUT ou OUTPUT" }),
   }),
-  categoryId: z.number().int().positive().optional(),
+  category_id: z.number().int().positive().optional(),
   status: z
     .enum(["PENDING", "PAID"], {
       errorMap: () => ({ message: "Status deve ser PENDING ou PAID" }),

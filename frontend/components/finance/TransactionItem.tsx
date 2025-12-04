@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { LucideIcon } from "../LucideIcons";
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -70,6 +71,8 @@ export function TransactionItem({
     setShowDeleteDialog(false);
   };
 
+  console.log(transaction.category);
+
   return (
     <>
       <div className="relative overflow-hidden rounded-lg">
@@ -91,7 +94,11 @@ export function TransactionItem({
           className="w-full flex items-center gap-3 p-3 bg-card rounded-lg shadow-card hover:shadow-card-hover transition-shadow text-left group relative"
         >
           <div className="flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center text-lg">
-            {transaction.category.icon || "📦"}
+            {transaction.category.id !== "0" ? (
+              <LucideIcon name={transaction.category.icon as any} />
+            ) : (
+              "📦"
+            )}
           </div>
 
           <div className="flex-1 min-w-0">

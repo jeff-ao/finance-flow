@@ -1,5 +1,5 @@
 import { prisma } from "src/lib/prisma.js";
-import { TransactionStatus } from "generated/prisma/client.js";
+import { TransactionStatus, TransactionType } from "generated/prisma/client.js";
 
 export enum UpdateScope {
   SINGLE = "SINGLE",
@@ -15,6 +15,7 @@ export const updateTransaction = async (
     date?: Date;
     status?: TransactionStatus;
     title?: string;
+    type?: TransactionType;
     categoryId?: number;
   },
   scope: UpdateScope = UpdateScope.SINGLE
