@@ -1,4 +1,5 @@
 import { listCategories } from "./list/index.js";
+import { createCategory } from "./create/index.js";
 
 export class CategoriesService {
   private static instance: CategoriesService;
@@ -14,5 +15,9 @@ export class CategoriesService {
 
   async list() {
     return listCategories();
+  }
+
+  async create(data: { name: string; webDeviceIcon?: string }) {
+    return createCategory(data);
   }
 }

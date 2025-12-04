@@ -108,6 +108,12 @@ const options: swaggerJsdoc.Options = {
               type: "string",
               description: "Nome da categoria",
             },
+            webDeviceIcon: {
+              type: "string",
+              nullable: true,
+              description: "Nome do ícone do Lucide Icons",
+              example: "ShoppingCart",
+            },
             createdAt: {
               type: "string",
               format: "date-time",

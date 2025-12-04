@@ -91,6 +91,7 @@ export const CategoriesScalarFieldEnum = {
   id: 'id',
   uuid: 'uuid',
   name: 'name',
+  webDeviceIcon: 'webDeviceIcon',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
