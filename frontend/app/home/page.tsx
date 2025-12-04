@@ -6,7 +6,7 @@ import { mockTransactions, monthsFull } from "@/data/mockData";
 import { SummaryCards } from "@/components/finance/SummaryCards";
 import { MonthSelector } from "@/components/finance/MonthSelector";
 import { TransactionList } from "@/components/finance/TransactionList";
-import { AddTransactionModal } from "@/components/finance/AddTransactionModal";
+import { TransactionModal } from "@/components/finance/TransactionModal";
 import { BottomDock } from "@/components/finance/BottomDock";
 
 export default function Home() {
@@ -76,6 +76,10 @@ export default function Home() {
     setEditingTransaction(null);
   };
 
+  const handleDeleteTransaction = (transaction: Transaction) => {
+    setTransactions((prev) => prev.filter((t) => t.id !== transaction.id));
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="max-w-[1000px] mx-auto px-4 py-6 space-y-4">
@@ -99,6 +103,7 @@ export default function Home() {
         <TransactionList
           transactions={filteredTransactions}
           onTransactionClick={handleTransactionClick}
+          onDeleteTransaction={handleDeleteTransaction}
         />
       </div>
 
@@ -110,13 +115,14 @@ export default function Home() {
       />
 
       {/* Add/Edit Transaction Modal */}
-      <AddTransactionModal
+      <TransactionModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           setEditingTransaction(null);
         }}
         onSave={handleSaveTransaction}
+        onDelete={handleDeleteTransaction}
         editingTransaction={editingTransaction}
       />
     </div>

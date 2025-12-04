@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 interface TransactionListProps {
   transactions: Transaction[];
   onTransactionClick: (transaction: Transaction) => void;
+  onDeleteTransaction?: (transaction: Transaction) => void;
 }
 
 type FilterType = "all" | "income" | "expense";
@@ -27,6 +28,7 @@ type FilterType = "all" | "income" | "expense";
 export function TransactionList({
   transactions,
   onTransactionClick,
+  onDeleteTransaction,
 }: TransactionListProps) {
   const [filter, setFilter] = useState<FilterType>("all");
   const [showEmpty, setShowEmpty] = useState(true);
@@ -103,6 +105,7 @@ export function TransactionList({
               <TransactionItem
                 transaction={transaction}
                 onClick={onTransactionClick}
+                onDelete={onDeleteTransaction}
               />
             </div>
           ))
