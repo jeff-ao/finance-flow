@@ -4,9 +4,7 @@ export const createRecurrenceSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   amount: z.number().positive("Valor deve ser positivo"),
   startDate: z.string().datetime("Data inválida").or(z.date()),
-  type: z.enum(["INPUT", "OUTPUT"], {
-    errorMap: () => ({ message: "Tipo deve ser INPUT ou OUTPUT" }),
-  }),
+  type: z.enum(["INPUT", "OUTPUT"]),
   categoryId: z.number().int().positive().optional(),
   totalInstallments: z.number().int().positive().optional(),
   frequencyId: z.number().int().positive("Frequência é obrigatória"),
