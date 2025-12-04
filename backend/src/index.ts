@@ -8,9 +8,10 @@ import transactionRoutes from "./routes/Transactions/index.js";
 import recurrenceRoutes from "./routes/Recurrences/index.js";
 import categoryRoutes from "./routes/Categories/index.js";
 import frequencyRoutes from "./routes/Frequencies/index.js";
+import { APP_CONFIG } from "application/config/app.cofig.js";
 
 const app = express();
-const port = 3000;
+const port = APP_CONFIG.PORT;
 
 app.use(express.json());
 
