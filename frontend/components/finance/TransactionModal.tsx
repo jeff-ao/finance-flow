@@ -3,7 +3,6 @@ import { Transaction, TransactionType, Category } from "@/types/finance";
 import { categoryService } from "@/lib/services";
 import type { Category as APICategory } from "@/lib/schemas";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import {
   CalendarIcon,
   Wallet,
@@ -18,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -36,11 +34,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -305,34 +298,16 @@ export function TransactionModal({
                 <Label className="text-sm font-medium">
                   Data <span className="text-expense">*</span>
                 </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full h-11 sm:h-12 justify-start text-left font-normal rounded-xl border-2 text-sm sm:text-base",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-1.5 sm:mr-2 h-4 w-4" />
-                      {date
-                        ? format(date, "dd/MM/yy", { locale: ptBR })
-                        : "Selecione"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0 rounded-xl"
-                    align="start"
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(d) => d && setDate(d)}
-                      initialFocus
-                      className="p-3 pointer-events-auto rounded-xl"
-                    />
-                  </PopoverContent>
-                </Popover>
+                <div className="relative">
+                  <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    type="date"
+                    value={format(date, "yyyy-MM-dd")}
+                    onChange={(e) => setDate(new Date(e.target.value))}
+                    className="h-11 sm:h-12 pl-10 rounded-xl border-2 focus:border-primary text-sm sm:text-base"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
