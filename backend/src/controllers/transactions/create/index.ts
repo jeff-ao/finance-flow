@@ -22,7 +22,10 @@ export const createTransaction = async (
     const transaction = await transactionsService.create({
       title: validatedData.title,
       value: validatedData.amount,
-      date: validatedData.date,
+      date:
+        typeof validatedData.date === "string"
+          ? new Date(validatedData.date)
+          : validatedData.date,
       type: validatedData.type,
       categoryId: validatedData.category_id,
       status: validatedData.status,

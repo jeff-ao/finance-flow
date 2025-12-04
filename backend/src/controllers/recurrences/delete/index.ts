@@ -19,7 +19,7 @@ export const deleteRecurrence = async (
     await recurrencesService.delete(
       recurrenceId,
       user.id,
-      validatedData.keep_history
+      validatedData.keepHistory
     );
 
     res.status(200).json({ message: "Recorrência deletada com sucesso" });

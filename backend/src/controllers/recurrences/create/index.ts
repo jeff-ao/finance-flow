@@ -17,11 +17,14 @@ export const createRecurrence = async (
     const result = await recurrencesService.create({
       title: validatedData.title,
       amount: validatedData.amount,
-      startDate: validatedData.start_date,
+      startDate:
+        typeof validatedData.startDate === "string"
+          ? new Date(validatedData.startDate)
+          : validatedData.startDate,
       type: validatedData.type,
-      categoryId: validatedData.category_id,
-      totalInstallments: validatedData.total_installments,
-      frequencyId: validatedData.frequency_id,
+      categoryId: validatedData.categoryId,
+      totalInstallments: validatedData.totalInstallments,
+      frequencyId: validatedData.frequencyId,
       userId: user.id,
     });
 
