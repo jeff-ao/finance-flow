@@ -21,6 +21,9 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
+        <footer className="text-center p-4 text-sm text-muted-foreground">
+          © 2025 Finance Flow. Todos os direitos reservados.
+        </footer>
       </body>
     </html>
   );
