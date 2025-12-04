@@ -1,13 +1,57 @@
-import express from 'express';
+import "dotenv/config";
+import express from "express";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
+import userRoutes from "./routes/Users/index.js";
+import transactionRoutes from "./routes/Transactions/index.js";
+import recurrenceRoutes from "./routes/Recurrences/index.js";
+import categoryRoutes from "./routes/Categories/index.js";
+import frequencyRoutes from "./routes/Frequencies/index.js";
+import { APP_CONFIG } from "application/config/app.cofig.js";
+import cors from "cors";
 
 const app = express();
-const port = 3000;
+const port = APP_CONFIG.PORT;
 
-app.get('/', (_req, res) => {
-  res.send('Servidor Express está rodando com sucesso! 🚀');
+app.use(express.json());
+app.use(
+  cors({
+    origin: APP_CONFIG.CORS_ORIGIN,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Swagger Documentation
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "Finance Flow API Documentation",
+  })
+);
+
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    message: "Servidor Express está rodando com sucesso! 🚀",
+    documentation: "http://localhost:3000/api-docs",
+  });
 });
+
+app.use("/", userRoutes);
+app.use("/transactions", transactionRoutes);
+app.use("/recurrences", recurrenceRoutes);
+app.use("/categories", categoryRoutes);
+app.use("/frequencies", frequencyRoutes);
+
+app.use(errorMiddleware);
 
 app.listen(port, () => {
   console.log(`🚀 Servidor ouvindo em http://localhost:${port}`);
+  console.log(
+    `📚 Documentação disponível em http://localhost:${port}/api-docs`
+  );
 });
-

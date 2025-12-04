@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Users {
+  id           Int            @id @default(autoincrement())
+  uuid         String         @unique @default(uuid())
+  email        String         @unique
+  password     String
+  name         String
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  transactions Transactions[]
+  recurrences  Recurrences[]
+}
+
+model Categories {
+  id            Int            @id @default(autoincrement())
+  uuid          String         @unique @default(uuid())
+  name          String         @unique
+  webDeviceIcon String?        @map("web_device_icon")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  transactions  Transactions[]
+  recurrences   Recurrences[]
+}
+
+model Frequencies {
+  id            Int           @id @default(autoincrement())
+  title         String
+  intervalValue Int           @map("interval_value")
+  intervalUnit  String        @map("interval_unit")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  recurrences   Recurrences[]
+}
+
+enum TransactionType {
+  INPUT
+  OUTPUT
+}
+
+enum TransactionStatus {
+  PENDING
+  PAID
+}
+
+model Recurrences {
+  id                Int             @id @default(autoincrement())
+  uuid              String          @unique @default(uuid())
+  title             String
+  totalInstallments Int?            @map("total_installments")
+  startDate         DateTime        @map("start_date")
+  active            Boolean         @default(true)
+  type              TransactionType
+  userId            Int             @map("user_id")
+  categoryId        Int?            @map("category_id")
+  frequencyId       Int             @map("frequency_id")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  user              Users           @relation(fields: [userId], references: [id])
+  category          Categories?     @relation(fields: [categoryId], references: [id])
+  frequency         Frequencies     @relation(fields: [frequencyId], references: [id])
+  transactions      Transactions[]
+}
+
+model Transactions {
+  id                Int               @id @default(autoincrement())
+  uuid              String            @unique @default(uuid())
+  value             Decimal           @db.Decimal(10, 2)
+  title             String
+  date              DateTime
+  type              TransactionType
+  installmentNumber Int               @default(1) @map("installment_number")
+  status            TransactionStatus @default(PENDING)
+  recurrenceId      Int?              @map("recurrence_id")
+  categoryId        Int?              @map("category_id")
+  userId            Int               @map("user_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  user              Users             @relation(fields: [userId], references: [id])
+  category          Categories?       @relation(fields: [categoryId], references: [id])
+  recurrence        Recurrences?      @relation(fields: [recurrenceId], references: [id])
+}
