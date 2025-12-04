@@ -3,6 +3,7 @@ import {
   createTransaction,
   listTransactions,
   updateTransaction,
+  deleteTransaction,
 } from "src/controllers/transactions/index.js";
 import { authMiddleware } from "src/middlewares/auth.middleware.js";
 
@@ -250,5 +251,43 @@ router.get("/", listTransactions);
  *         $ref: '#/components/responses/InternalServerError'
  */
 router.patch("/:id", updateTransaction);
+
+/**
+ * @swagger
+ * /transactions/{id}:
+ *   delete:
+ *     tags: [Transactions]
+ *     summary: Deletar uma transação
+ *     description: Remove uma transação específica do usuário
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID da transação
+ *     responses:
+ *       200:
+ *         description: Transação deletada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Transação deletada com sucesso
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.delete("/:id", deleteTransaction);
 
 export default router;
