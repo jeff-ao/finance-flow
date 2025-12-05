@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -68,15 +69,19 @@ export function TransactionModal({
   const [addAnother, setAddAnother] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [categories, setCategories] = useState<APICategory[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   // Carrega categorias
   useEffect(() => {
     const loadCategories = async () => {
+      setLoadingCategories(true);
       try {
         const data = await categoryService.list();
         setCategories(data);
       } catch (error) {
         console.error("Erro ao carregar categorias:", error);
+      } finally {
+        setLoadingCategories(false);
       }
     };
     loadCategories();
@@ -261,40 +266,44 @@ export function TransactionModal({
                 <Label className="text-sm font-medium">
                   Categoria <span className="text-expense">*</span>
                 </Label>
-                <Select
-                  value={categoryId}
-                  onValueChange={setCategoryId}
-                  required
-                >
-                  <SelectTrigger className="h-[44px]  rounded-xl border-2 focus:border-primary text-base">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    {categories.map((category) => (
-                      <SelectItem
-                        key={category.id}
-                        value={category.id.toString()}
-                        className="rounded-lg text-sm"
-                      >
-                        <span className="flex items-center gap-2">
-                          <span>
-                            {category.webDeviceIcon !== null ? (
-                              <LucideIcon
-                                name={category.webDeviceIcon as any}
-                              />
-                            ) : (
-                              "📦"
-                            )}
+                {loadingCategories ? (
+                  <Skeleton className="h-11 sm:h-12 rounded-xl" />
+                ) : (
+                  <Select
+                    value={categoryId}
+                    onValueChange={setCategoryId}
+                    required
+                  >
+                    <SelectTrigger className="h-11 sm:h-12 rounded-xl border-2 focus:border-primary text-base">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                          className="rounded-lg text-sm"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>
+                              {category.webDeviceIcon !== null ? (
+                                <LucideIcon
+                                  name={category.webDeviceIcon as any}
+                                />
+                              ) : (
+                                "📦"
+                              )}
+                            </span>
+                            <span>{category.name}</span>
                           </span>
-                          <span>{category.name}</span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
-              <div className="space-y-2 w-full">
+              <div className="space-y-2 w">
                 <Label className="text-sm font-medium">
                   Data <span className="text-expense">*</span>
                 </Label>

@@ -62,7 +62,7 @@ export function MonthSelector({
                   "h-4 w-4 text-primary transition-all hidden",
                   !isCurrentMonth && "group-hover:block"
                 )} />
-                <span className="font-bold text-lg">{selectedYear}</span>
+                <span className="font-bold text-lg">{selectedYear}/{months[selectedMonth]}</span>
               </button>
             </TooltipTrigger>
             {!isCurrentMonth && (
