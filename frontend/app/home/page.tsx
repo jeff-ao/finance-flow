@@ -9,6 +9,7 @@ import { TransactionList } from "@/components/finance/TransactionList";
 import { TransactionModal } from "@/components/finance/TransactionModal";
 import { BottomDock } from "@/components/finance/BottomDock";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   authService,
   transactionService,
@@ -224,13 +225,31 @@ export default function Home() {
         />
 
         {/* Transaction List */}
-        <TransactionList
-          transactions={filteredTransactions}
-          onTransactionClick={handleTransactionClick}
-          onDeleteTransaction={handleDeleteTransaction}
-        />
+        {isLoading ? (
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="bg-card rounded-xl p-4 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3 flex-1">
+                    <Skeleton className="w-10 h-10 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-5 w-20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <TransactionList
+            transactions={filteredTransactions}
+            onTransactionClick={handleTransactionClick}
+            onDeleteTransaction={handleDeleteTransaction}
+          />
+        )}
 
-        {/* Paginação */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 px-2">
             <p className="text-sm text-muted-foreground">
