@@ -9,8 +9,24 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Finance App",
-  description: "Aplicativo de gestão financeira pessoal",
+  title: "Finance Flow",
+  description: "Aplicativo de gestão financeira pessoal - Controle suas finanças de forma simples e eficiente",
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/icon.png',
+  },
+  openGraph: {
+    title: "Finance Flow",
+    description: "Aplicativo de gestão financeira pessoal - Controle suas finanças de forma simples e eficiente",
+    type: "website",
+    images: ['/icon.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Finance Flow",
+    description: "Aplicativo de gestão financeira pessoal",
+    images: ['/icon.png'],
+  },
 };
 
 export default function RootLayout({
