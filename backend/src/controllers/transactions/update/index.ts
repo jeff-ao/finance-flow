@@ -33,7 +33,7 @@ export const updateTransaction = async (
       transactionId,
       user.id,
       {
-        value: validatedData.amount,
+        value: validatedData.value,
         date:
           validatedData.date instanceof Date
             ? validatedData.date
