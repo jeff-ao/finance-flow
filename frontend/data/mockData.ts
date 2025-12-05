@@ -95,6 +95,23 @@ export const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
+export const formatCurrencyCompact = (value: number): string => {
+  const absValue = Math.abs(value);
+
+  if (absValue >= 1000000) {
+    // 1 milhão ou mais -> 1mi, 1.5mi
+    const millions = value / 1000000;
+    return `R$ ${millions.toFixed(millions >= 10 ? 0 : 1)}mi`;
+  } else if (absValue >= 1000) {
+    // 1 mil ou mais -> 1mil, 1.5mil
+    const thousands = value / 1000;
+    return `R$ ${thousands.toFixed(thousands >= 10 ? 0 : 1)}mil`;
+  }
+
+  // Valores menores que 1000 -> formato normal
+  return formatCurrency(value);
+};
+
 export const months = [
   "Jan",
   "Fev",

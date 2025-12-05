@@ -150,7 +150,7 @@ export function TransactionModal({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-h-[98vh] sm:max-h-screen p-0 gap-0 overflow-y-hidden sm:max-w-lg w-full ">
+        <DialogContent className="max-h-[100dvh] sm:max-h-screen p-0 gap-0 overflow-y-hidden overflow-x-hidden max-w-lg w-full">
           {/* Header with gradient */}
           <div
             className={cn(
@@ -185,7 +185,7 @@ export function TransactionModal({
 
           <form
             onSubmit={handleSubmit}
-            className="p-4 sm:px-6 space-y-4 sm:space-y-5 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(100vh-220px)]"
+            className="p-6 sm:px-6 space-y-4 sm:space-y-5 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(100vh-220px)]"
           >
             {/* Type Toggle */}
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -250,14 +250,14 @@ export function TransactionModal({
                 placeholder="Ex: Almoço, Salário, Uber..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="h-11 sm:h-12 rounded-xl border-2 focus:border-primary text-sm sm:text-base"
+                className="h-11 sm:h-12 rounded-xl border-2 focus:border-primary text-base"
                 required
               />
             </div>
 
             {/* Category & Date Row */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              <div className="space-y-2">
+            <div className="gap-3 flex flex-row justify-between align-center">
+              <div className="space-y-2 w-full ">
                 <Label className="text-sm font-medium">
                   Categoria <span className="text-expense">*</span>
                 </Label>
@@ -266,7 +266,7 @@ export function TransactionModal({
                   onValueChange={setCategoryId}
                   required
                 >
-                  <SelectTrigger className="h-11 sm:h-12 rounded-xl border-2 focus:border-primary text-sm sm:text-base">
+                  <SelectTrigger className="h-[44px]  rounded-xl border-2 focus:border-primary text-base">
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -294,20 +294,23 @@ export function TransactionModal({
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <Label className="text-sm font-medium">
                   Data <span className="text-expense">*</span>
                 </Label>
-                <div className="relative">
-                  <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    type="date"
-                    value={format(date, "yyyy-MM-dd")}
-                    onChange={(e) => setDate(new Date(e.target.value))}
-                    className="h-11 sm:h-12 pl-10 rounded-xl border-2 focus:border-primary text-sm sm:text-base"
-                    required
-                  />
-                </div>
+                {/* <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" /> */}
+                <Input
+                  type="date"
+                  value={format(date, "yyyy-MM-dd")}
+                  onChange={(e) => {
+                    const [year, month, day] = e.target.value
+                      .split("-")
+                      .map(Number);
+                    setDate(new Date(year, month - 1, day));
+                  }}
+                  className="h-[44px]  rounded-xl border-2 focus:border-primary text-sm"
+                  required
+                />
               </div>
             </div>
 
@@ -342,7 +345,7 @@ export function TransactionModal({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="rounded-xl border-2 focus:border-primary resize-none text-sm sm:text-base"
+                className="rounded-xl border-2 focus:border-primary resize-none text-base"
               />
             </div>
 
@@ -372,7 +375,7 @@ export function TransactionModal({
                   />
                   <Label
                     htmlFor="addAnother"
-                    className="text-xs sm:text-sm cursor-pointer text-muted-foreground"
+                    className="text-sm sm:text-sm cursor-pointer text-muted-foreground"
                   >
                     Cadastrar mais
                   </Label>
@@ -392,6 +395,10 @@ export function TransactionModal({
                   ? "Salvar Alterações"
                   : "Adicionar"}
               </Button>
+            </div>
+            {/*Gambiarra pra espaçamento no mobile */}
+            <div className="h-[20px] w-full bg-transparent block md:hidden">
+              {" "}
             </div>
           </form>
         </DialogContent>

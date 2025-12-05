@@ -252,7 +252,7 @@ export default function Authenticate() {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-end">
+                  <div className="flex items-center justify-center md:justify-end">
                     <p className="text-sm text-gray-500">
                       entre e comece a gerenciar suas finanças!
                     </p>
