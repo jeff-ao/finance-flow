@@ -3,6 +3,13 @@ import { prisma } from "src/lib/prisma.js";
 async function main() {
   console.log("🌱 Iniciando seed do banco de dados...");
 
+  // Verificar se já existem categorias no banco
+  const existingCategories = await prisma.categories.count();
+  if (existingCategories > 0) {
+    console.log("ℹ️  Categorias já existem no banco. Seed não será executado.");
+    return;
+  }
+
   // Seed de categorias
   const categories = [
     { name: "Alimentação", webDeviceIcon: "Utensils" },
